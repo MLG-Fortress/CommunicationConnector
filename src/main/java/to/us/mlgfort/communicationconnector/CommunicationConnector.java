@@ -84,7 +84,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     {
         String joinMessage = event.getJoinMessage();
         if (joinMessage == null || joinMessage.isEmpty())
-            joinMessage = event.getPlayer().getName() + " IZ BAK 4 MOAR MEINKRAFT!!!!!!1111111111!!!1";
+            joinMessage = event.getPlayer().getDisplayName() + " IZ BAK 4 MOAR MEINKRAFT!!!!!!1111111111!!!1";
         sendToApps(SERBUR_SENDER, joinMessage);
     }
 
@@ -93,7 +93,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     {
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
-            quitMessage = event.getPlayer().getName() + " left us in loneliness :c";
+            quitMessage = event.getPlayer().getDisplayName() + " left us in loneliness :c";
         sendToApps(SERBUR_SENDER, quitMessage);
     }
 
