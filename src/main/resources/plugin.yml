@@ -1,0 +1,5 @@
+name: CommunicationConnector
+author: RoboMWM
+version: ${project.version}
+main: me.robomwm.communicationconnector.CommunicationConnector
+depend: [PurpleIRC, SlackIntegration]
