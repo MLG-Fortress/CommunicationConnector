@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created on 7/29/2017.
@@ -41,10 +42,17 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
 
 
-    private void sendToIRC(String message)
+    private void sendToIRC(final String message)
     {
-        for (PurpleBot bot : purpleIRC.ircBots.values())
-            bot.asyncIRCMessage("#MLG", message);
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                for (PurpleBot bot : purpleIRC.ircBots.values())
+                    bot.asyncIRCMessage("#MLG", message);
+            }
+        }.runTaskAsynchronously(this);
     }
 
     public void sendToAppsAndServer(Apps sendingApp, String name, String message)
@@ -62,6 +70,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     //MC Listeners//
     //I might be better off not attempting to implement this since literally every plugin implements this anyways...
+    @Deprecated
     private void sendToApps(CommandSender sender, String message)
     {
         String name = sender.getName();
@@ -114,6 +123,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onIRCChatReceivedEvent(IRCMessageEvent event)
     {
+        //todo: detect and only send messages
         String[] messageArray = event.getMessage().split(" ");
         String name = messageArray[0];
         messageArray[0] = "";
