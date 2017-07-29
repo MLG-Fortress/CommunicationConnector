@@ -82,14 +82,18 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event)
     {
-        String joinMessage = event.getPlayer().getName() + " IZ BAK 4 MOAR MEINKRAFT!!!!!!1111111111!!!1";
+        String joinMessage = event.getJoinMessage();
+        if (joinMessage == null || joinMessage.isEmpty())
+            joinMessage = event.getPlayer().getName() + " IZ BAK 4 MOAR MEINKRAFT!!!!!!1111111111!!!1";
         sendToApps(SERBUR_SENDER, joinMessage);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onQuit(PlayerQuitEvent event)
     {
-        String quitMessage = event.getPlayer().getName() + " left us in loneliness :c";
+        String quitMessage = event.getQuitMessage();
+        if (quitMessage == null || quitMessage.isEmpty())
+            quitMessage = event.getPlayer().getName() + " left us in loneliness :c";
         sendToApps(SERBUR_SENDER, quitMessage);
     }
 
