@@ -39,20 +39,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
     }
 
-    public void sendToApps(CommandSender sender, String message)
-    {
-        String name = sender.getName();
-        boolean avatar = true;
-        if (!(sender instanceof Player))
-        {
-            name = SERBUR_NAME;
-            avatar = false;
-        }
 
-        slack.sendToSlack(name, ChatColor.stripColor(message), avatar);
-
-        sendToIRC(name + ": " + message);
-    }
 
     private void sendToIRC(String message)
     {
@@ -74,6 +61,21 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     }
 
     //MC Listeners//
+    //I might be better off not attempting to implement this since literally every plugin implements this anyways...
+    private void sendToApps(CommandSender sender, String message)
+    {
+        String name = sender.getName();
+        boolean avatar = true;
+        if (!(sender instanceof Player))
+        {
+            name = SERBUR_NAME;
+            avatar = false;
+        }
+
+        slack.sendToSlack(name, ChatColor.stripColor(message), avatar);
+
+        //sendToIRC(name + ": " + message);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event)
