@@ -6,10 +6,8 @@ import com.cnaude.purpleirc.PurpleIRC;
 import com.teej107.slack.MessageSentFromSlackEvent;
 import com.teej107.slack.Slack;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,17 +53,19 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         }.runTaskAsynchronously(this);
     }
 
-    public void sendToAppsAndServer(Apps sendingApp, String name, String message)
+    public void sendToApps(Apps sendingApp, String name, String message)
     {
         String appName = WordUtils.capitalize(sendingApp.toString().toLowerCase());
-        String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
+        String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
+        String prefix = appName + "\u2759" + name;
+        String prefixWithWhitespace = appName + "\u2759" + nameWithZeroWidthWhitespace;
+        //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
+        //getServer().broadcastMessage(formattedMessage);
 
         if (sendingApp != Apps.SLACK)
-            slack.sendToSlack(name, message, false);
+            slack.sendToSlack(prefix, message, false);
         if (sendingApp != Apps.IRC)
-            sendToIRC(name + ": " + message);
-
-        getServer().broadcastMessage(formattedMessage);
+            sendToIRC(prefixWithWhitespace + ": " + message);
     }
 
     //MC Listeners//
@@ -73,15 +73,15 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @Deprecated
     private void sendToApps(CommandSender sender, String message)
     {
-        String name = sender.getName();
-        boolean avatar = true;
-        if (!(sender instanceof Player))
-        {
-            name = SERBUR_NAME;
-            avatar = false;
-        }
-
-        slack.sendToSlack(name, ChatColor.stripColor(message), avatar);
+//        String name = sender.getName();
+//        boolean avatar = true;
+//        if (!(sender instanceof Player))
+//        {
+//            name = SERBUR_NAME;
+//            avatar = false;
+//        }
+//
+//        slack.sendToSlack(name, ChatColor.stripColor(message), avatar);
 
         //sendToIRC(name + ": " + message);
     }
@@ -117,7 +117,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onSlackMessageSent(MessageSentFromSlackEvent event)
     {
-        sendToAppsAndServer(Apps.SLACK, event.getUsername(), event.getMessage());
+        sendToApps(Apps.SLACK, event.getUsername(), event.getMessage());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -126,9 +126,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         //todo: detect and only send messages
         String[] messageArray = event.getMessage().split(" ");
         String name = messageArray[0];
+
+        if (!name.startsWith("\u00A77\u2759IRC\u00A7r"))
+            return;
+        name = messageArray[0].substring(8);
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
-        sendToAppsAndServer(Apps.IRC, name, message);
+        sendToApps(Apps.IRC, name, message);
     }
 }
 
