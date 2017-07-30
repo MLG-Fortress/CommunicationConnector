@@ -131,13 +131,18 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onIRCChatReceivedEvent(IRCMessageEvent event)
     {
-        //todo: detect and only send messages
         String[] messageArray = event.getMessage().split(" ");
-        String name = messageArray[0];
+        String name = "";
 
-        if (!name.startsWith("\u00A77IRC\u2759\u00A7r"))
+        if (!messageArray[0].startsWith("\u00A77IRC\u2759\u00A7r"))
             return;
-        name = messageArray[0].substring(8, name.length() - 1); //removes prefix and suffix, since purpleirc formats messages before sending this event
+        if (messageArray[1].equalsIgnoreCase("*"))
+        {
+            name = messageArray[2];
+            messageArray[2] = "";
+        }
+        else
+            name = messageArray[0].substring(8, messageArray[0].length() - 1); //removes prefix and suffix, since purpleirc formats messages before sending this event
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
         sendToApps(Apps.IRC, name, message);
