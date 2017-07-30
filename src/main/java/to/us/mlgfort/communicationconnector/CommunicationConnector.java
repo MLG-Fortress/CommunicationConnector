@@ -55,9 +55,17 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     public void sendToApps(Apps sendingApp, String name, String message)
     {
-        String appName = WordUtils.capitalize(sendingApp.toString().toLowerCase());
+        String appName = sendingApp.toString();
+        switch(sendingApp)
+        {
+            case IRC:
+                break;
+            default:
+                appName = WordUtils.capitalize(sendingApp.toString().toLowerCase());
+        }
+
         String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
-        String prefix = appName + "\u2759" + name;
+        String prefix = "[" + appName + "] " + name;
         String prefixWithWhitespace = appName + "\u2759" + nameWithZeroWidthWhitespace;
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
