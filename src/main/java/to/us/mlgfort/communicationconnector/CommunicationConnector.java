@@ -127,7 +127,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         String[] messageArray = event.getMessage().split(" ");
         String name = messageArray[0];
 
-        if (!name.startsWith("\u00A77\u2759IRC\u00A7r"))
+        if (!name.startsWith("\u00A77IRC\u2759\u00A7r"))
             return;
         name = messageArray[0].substring(8);
         messageArray[0] = "";
