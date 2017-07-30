@@ -137,7 +137,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         if (!name.startsWith("\u00A77IRC\u2759\u00A7r"))
             return;
-        name = messageArray[0].substring(8);
+        name = messageArray[0].substring(8, name.length() - 1); //removes prefix and suffix, since purpleirc formats messages before sending this event
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
         sendToApps(Apps.IRC, name, message);
