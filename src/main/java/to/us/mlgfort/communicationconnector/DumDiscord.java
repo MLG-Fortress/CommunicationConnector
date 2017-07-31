@@ -21,6 +21,6 @@ public class DumDiscord
     @Subscribe
     public void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
     {
-        instance.sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getStrippedContent());
+        instance.sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getContent());
     }
 }
