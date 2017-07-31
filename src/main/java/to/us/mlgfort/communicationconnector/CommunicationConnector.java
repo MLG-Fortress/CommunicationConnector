@@ -31,9 +31,10 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
+        DumDiscord why = new DumDiscord(this);
         try
         {
-            DiscordSRV.api.subscribe(new DumDiscord(this));
+            DiscordSRV.api.subscribe(why);
         }
         catch (Throwable e)
         {
