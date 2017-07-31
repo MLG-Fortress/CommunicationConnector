@@ -2,4 +2,4 @@ name: CommunicationConnector
 author: RoboMWM
 version: ${project.version}
 main: to.us.mlgfort.communicationconnector.CommunicationConnector
-depend: [PurpleIRC, SlackIntegration]
+depend: [PurpleIRC, SlackIntegration, DiscordSRV]

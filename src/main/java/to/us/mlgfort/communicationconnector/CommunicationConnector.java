@@ -5,6 +5,9 @@ import com.cnaude.purpleirc.PurpleBot;
 import com.cnaude.purpleirc.PurpleIRC;
 import com.teej107.slack.MessageSentFromSlackEvent;
 import com.teej107.slack.Slack;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
+import github.scarsz.discordsrv.util.DiscordUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -72,8 +75,11 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         if (sendingApp != Apps.SLACK)
             slack.sendToSlack(prefix, message, false);
-        if (sendingApp != Apps.IRC)
+        if (sendingApp != Apps.IRC && sendingApp != Apps.DISCORD) //PurpleIRC already integrates with DiscordSRV
+        {
             sendToIRC(prefixWithWhitespace + ": " + message);
+            DiscordUtil.sendMessage(null, prefix + ": " + message);
+        }
     }
 
     //MC Listeners//
@@ -122,12 +128,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     //App Listeners//
 
+    //Slack
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onSlackMessageSent(MessageSentFromSlackEvent event)
     {
         sendToApps(Apps.SLACK, event.getUsername(), event.getMessage());
     }
 
+    //IRC
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onIRCChatReceivedEvent(IRCMessageEvent event)
     {
@@ -146,6 +154,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
         sendToApps(Apps.IRC, name, message);
+    }
+
+    //Discord
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
+    {
+        sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getStrippedContent());
     }
 }
 
