@@ -31,7 +31,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
-        DiscordSRV.api.subscribe(new DumDiscord(this));
+        try
+        {
+            DiscordSRV.api.subscribe(new DumDiscord(this));
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void sendToIRC(final String message)

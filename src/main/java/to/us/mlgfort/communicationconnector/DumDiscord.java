@@ -1,8 +1,7 @@
 package to.us.mlgfort.communicationconnector;
 
+import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 
 /**
  * Created on 7/31/2017.
@@ -19,7 +18,7 @@ public class DumDiscord
     }
 
     //Discord
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @Subscribe
     private void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
     {
         instance.sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getStrippedContent());
