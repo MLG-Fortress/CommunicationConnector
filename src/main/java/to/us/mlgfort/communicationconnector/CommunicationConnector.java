@@ -39,9 +39,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
+        DiscordSRV.api.subscribe(new CommunicationConnector());
     }
-
-
 
     private void sendToIRC(final String message)
     {
@@ -78,7 +77,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (sendingApp != Apps.IRC && sendingApp != Apps.DISCORD) //PurpleIRC already integrates with DiscordSRV
         {
             sendToIRC(prefixWithWhitespace + ": " + message);
-            DiscordUtil.sendMessage(null, prefix + ": " + message);
+            DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), prefix + ": " + message);
         }
     }
 
@@ -144,7 +143,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         if (!messageArray[0].startsWith("\u00A77IRC\u2759\u00A7r"))
             return;
-        if (messageArray[1].equalsIgnoreCase("*"))
+        if (messageArray[1].equalsIgnoreCase("\u00A75*"))
         {
             name = messageArray[2];
             messageArray[2] = "";
@@ -156,12 +155,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         sendToApps(Apps.IRC, name, message);
     }
 
-    //Discord
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
-    {
-        sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getStrippedContent());
-    }
+
 }
 
 enum Apps
