@@ -177,7 +177,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         StringBuilder message = new StringBuilder();
         for (int i = 1; i < args.length; i++)
-            message.append(args[i]);
+            message.append(args[i] + " ");
 
         sendToAllApps(args[0], message.toString());
 
