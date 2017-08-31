@@ -8,6 +8,9 @@ import com.teej107.slack.Slack;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.util.DiscordUtil;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,6 +58,11 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         }.runTaskAsynchronously(this);
     }
 
+    private void sendToDiscord(final String message)
+    {
+        DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), message);
+    }
+
     public void sendToApps(Apps sendingApp, String name, String message)
     {
         String appName = sendingApp.toString();
@@ -77,8 +85,15 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (sendingApp != Apps.IRC && sendingApp != Apps.DISCORD) //PurpleIRC already integrates with DiscordSRV
         {
             sendToIRC(prefixWithWhitespace + ": " + message);
-            DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), prefix + ": " + message);
+            sendToDiscord(prefix + ": " + message);
         }
+    }
+
+    public void sendToAllApps(String name, String message)
+    {
+        slack.sendToSlack(name, message, false);
+        sendToIRC(name + ": " + message);
+        sendToDiscord(name + ": " + message);
     }
 
     //MC Listeners//
@@ -155,6 +170,19 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         sendToApps(Apps.IRC, name, message);
     }
 
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+    {
+        if (sender instanceof Player)
+            return false;
+
+        StringBuilder message = new StringBuilder();
+        for (int i = 1; i < args.length; i++)
+            message.append(args[i]);
+
+        sendToAllApps(args[0], message.toString());
+
+        return true;
+    }
 
 }
 
