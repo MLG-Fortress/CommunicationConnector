@@ -199,9 +199,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (event.getPlayer().hasPlayedBefore())
             return;
 
-        String joinMessage = "*A wild `" + event.getPlayer().getName() + "` has appeared!*";
-        slack.sendToSlack("New player!", joinMessage, false);
-        sendToDiscord(joinMessage);
+        slack.sendToSlack("New player!", "*A wild `" + event.getPlayer().getName() + "` has appeared!*", false);
+        sendToDiscord("**A wild `" + event.getPlayer().getName() + "` has appeared!**");
     }
 
     private Set<Player> kickedPlayers = new HashSet<>();
@@ -215,7 +214,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
-            quitMessage = "`" + event.getPlayer().getName() + "` left";
+            quitMessage = "`" + event.getPlayer().getName() + "` _left_";
         slack.sendToSlack("Somebody left", quitMessage, false);
         sendToDiscord(quitMessage);
     }
@@ -223,7 +222,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onKick(PlayerKickEvent event)
     {
-        String quitMessage = "`" + event.getPlayer().getName() + "` left bcuz " + event.getReason();
+        String quitMessage = "`" + event.getPlayer().getName() + "` _left bcuz " + event.getReason() + "_";
         slack.sendToSlack("Somebody wuz kik'd", quitMessage, false);
         sendToDiscord(quitMessage);
         kickedPlayers.add(event.getPlayer());
