@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CommunicationConnector extends JavaPlugin implements Listener
 {
-    private final String SERBUR_NAME = "Da_Serbur_Sez";
     Slack slack;
     PurpleIRC purpleIRC;
     public void onEnable()
