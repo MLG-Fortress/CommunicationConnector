@@ -199,9 +199,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (event.getPlayer().hasPlayedBefore())
             return;
 
-        String joinMessage = event.getJoinMessage();
-        if (joinMessage == null || joinMessage.isEmpty())
-            joinMessage = "*A wild `" + event.getPlayer().getName() + "` has appeared!*";
+        String joinMessage = "*A wild `" + event.getPlayer().getName() + "` has appeared!*";
         slack.sendToSlack("New player!", joinMessage, false);
         sendToDiscord(joinMessage);
     }
@@ -225,7 +223,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onKick(PlayerKickEvent event)
     {
-        String quitMessage = event.getPlayer().getName() + " left bcuz " + event.getReason();
+        String quitMessage = "`" + event.getPlayer().getName() + "` left bcuz " + event.getReason();
         slack.sendToSlack("Somebody wuz kik'd", quitMessage, false);
         sendToDiscord(quitMessage);
         kickedPlayers.add(event.getPlayer());
