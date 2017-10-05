@@ -222,6 +222,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onKick(PlayerKickEvent event)
     {
+        if (!playerSentMessage.remove(event.getPlayer()))
+            return;
         String quitMessage = "`" + event.getPlayer().getName() + "` _left bcuz " + event.getReason() + "_";
         slack.sendToSlack("Somebody wuz kik'd", quitMessage, false);
         sendToDiscord(quitMessage);
@@ -229,7 +231,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         playerSentMessage.remove(event.getPlayer()); //cleanup
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onChat(AsyncPlayerChatEvent event)
     {
         playerSentMessage.add(event.getPlayer());
