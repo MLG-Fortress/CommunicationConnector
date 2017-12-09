@@ -8,11 +8,11 @@ import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
  *
  * @author RoboMWM
  */
-public class DumDiscord
+public class DumCord
 {
     CommunicationConnector instance;
 
-    DumDiscord(CommunicationConnector plugin)
+    DumCord(CommunicationConnector plugin)
     {
         instance = plugin;
     }
@@ -21,6 +21,6 @@ public class DumDiscord
     @Subscribe
     public void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
     {
-        instance.sendToApps(Apps.DISCORD, event.getAuthor().getName(), event.getMessage().getContent());
+        instance.sendToApps(Apps.DISCORD, event.getMember().getEffectiveName(), event.getMessage().getContent());
     }
 }

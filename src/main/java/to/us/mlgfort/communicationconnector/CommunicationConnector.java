@@ -5,7 +5,6 @@ import com.cnaude.purpleirc.PurpleBot;
 import com.cnaude.purpleirc.PurpleIRC;
 import com.teej107.slack.MessageSentFromSlackEvent;
 import com.teej107.slack.Slack;
-import com.teej107.slack.SlackCommandSender;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.util.DiscordUtil;
 import org.apache.commons.lang.WordUtils;
@@ -43,7 +42,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
-        DumDiscord why = new DumDiscord(this);
+        DumCord why = new DumCord(this);
         try
         {
             DiscordSRV.api.subscribe(why);
@@ -91,11 +90,10 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         if (sendingApp != Apps.SLACK)
             slack.sendToSlack(prefix, message, false);
-        if (sendingApp != Apps.IRC && sendingApp != Apps.DISCORD) //PurpleIRC already integrates with DiscordSRV
-        {
+        if (sendingApp != Apps.IRC)
             sendToIRC(prefixWithWhitespace + ": " + message);
+        if (sendingApp != Apps.DISCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
             sendToDiscord(prefix + ": " + message);
-        }
     }
 
     public void sendToAllApps(String name, String message)
@@ -173,7 +171,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             messageArray[2] = "";
         }
         else
-            name = messageArray[0].substring(8, messageArray[0].length() - 1); //removes prefix and suffix, since purpleirc formats messages before sending this event
+            name = messageArray[0].substring(8, messageArray[0].length() - 1); //removes prefix and suffix, since purpleirc formats messages before firing this event
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
         sendToApps(Apps.IRC, name, message);
