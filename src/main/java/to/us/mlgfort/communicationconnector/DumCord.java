@@ -21,6 +21,6 @@ public class DumCord
     @Subscribe
     public void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
     {
-        instance.sendToApps(Apps.DISCORD, event.getMember().getEffectiveName(), event.getMessage().getContent());
+        instance.sendToApps(Apps.DUMCORD, event.getMember().getEffectiveName(), event.getMessage().getContent());
     }
 }

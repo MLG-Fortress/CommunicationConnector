@@ -92,8 +92,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             slack.sendToSlack(prefix, message, false);
         if (sendingApp != Apps.IRC)
             sendToIRC(prefixWithWhitespace + ": " + message);
-        if (sendingApp != Apps.DISCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
-            sendToDiscord(prefix + ": " + message);
+        if (sendingApp != Apps.DUMCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
+            sendToDiscord("`" + prefix + ":` " + message);
     }
 
     public void sendToAllApps(String name, String message)
@@ -162,11 +162,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     {
         String[] messageArray = event.getMessage().split(" ");
         String name = "";
+        boolean action = false;
 
-        if (!messageArray[0].startsWith("\u00A77IRC\u2759\u00A7r"))
+        if (!messageArray[0].startsWith("\u00A77IRC\u2759\u00A7r")) //Something else...
             return;
-        if (messageArray[1].equalsIgnoreCase("\u00A75*"))
+        if (messageArray[1].equalsIgnoreCase("\u00A75*")) //action message
         {
+            action = true;
             name = messageArray[2];
             messageArray[2] = "";
         }
@@ -174,6 +176,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             name = messageArray[0].substring(8, messageArray[0].length() - 1); //removes prefix and suffix, since purpleirc formats messages before firing this event
         messageArray[0] = "";
         String message = String.join(" ", messageArray);
+        if (action)
+            message = "_" + message + "_"; //italicize action messages
         sendToApps(Apps.IRC, name, message);
     }
 
@@ -241,6 +245,6 @@ enum Apps
 {
     SLACK,
     IRC,
-    DISCORD
+    DUMCORD
 }
 
