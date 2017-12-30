@@ -94,6 +94,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             sendToIRC(prefixWithWhitespace + ": " + message);
         if (sendingApp != Apps.DUMCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
             sendToDiscord("`" + prefix + ":` " + message);
+        this.getServer().getPluginManager().callEvent(new IncomingChatEvent(name, message));
     }
 
     public void sendToAllApps(String name, String message)
