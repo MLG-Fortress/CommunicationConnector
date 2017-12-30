@@ -51,6 +51,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         {
             e.printStackTrace();
         }
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                sendToDiscord("**MLG Fortress IZ BAK 4 MOAR MINECRAFT!!!111!11ONEELEVEN**");
+            }
+        }.runTaskLater(this, 100L);
     }
 
     private void sendToIRC(final String message)
