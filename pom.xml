@@ -6,7 +6,7 @@
 
     <groupId>to.us.mlgfort</groupId>
     <artifactId>CommunicationConnector</artifactId>
-    <version>1.2</version>
+    <version>1.2.1</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

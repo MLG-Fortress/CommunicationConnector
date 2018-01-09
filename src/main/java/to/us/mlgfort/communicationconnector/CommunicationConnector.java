@@ -112,6 +112,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         sendToDiscord(message);
     }
 
+    public void sendToAllApps(String name, String message)
+    {
+        slack.sendToSlack(name, message, false);
+        sendToIRC(name + ": " + message);
+        sendToDiscord(name + ": " + message);
+    }
+
     //MC Listeners//
     //I might be better off not attempting to implement this since literally every plugin implements this anyways...
     //@Deprecated
