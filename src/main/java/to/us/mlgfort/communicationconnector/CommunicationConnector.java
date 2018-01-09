@@ -105,11 +105,11 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         this.getServer().getPluginManager().callEvent(new IncomingChatEvent(name, message));
     }
 
-    public void sendToAllApps(String name, String message)
+    public void sendToAllApps(String message)
     {
-        slack.sendToSlack(name, message, false);
-        sendToIRC(name + ": " + message);
-        sendToDiscord(name + ": " + message);
+        slack.sendToSlack("Serbur", message, false);
+        sendToIRC(message);
+        sendToDiscord(message);
     }
 
     //MC Listeners//
@@ -170,7 +170,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     private void onIRCChatReceivedEvent(IRCMessageEvent event)
     {
         String[] messageArray = event.getMessage().split(" ");
-        String name = "";
+        String name;
         boolean action = false;
 
         if (!messageArray[0].startsWith("\u00A77IRC\u2759\u00A7r")) //Something else...
@@ -195,11 +195,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (sender instanceof Player)
             return false;
 
-        StringBuilder message = new StringBuilder();
-        for (int i = 1; i < args.length; i++)
-            message.append(args[i] + " ");
-
-        sendToAllApps(args[0], message.toString());
+        sendToAllApps(String.join(" ", args));
 
         return true;
     }
