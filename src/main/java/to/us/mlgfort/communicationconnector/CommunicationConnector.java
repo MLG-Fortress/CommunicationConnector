@@ -56,7 +56,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             @Override
             public void run()
             {
-                sendToDiscord("**MLG Fortress IZ BAK 4 MOAR MINECRAFT!!!111!11ONEELEVEN**");
+                sendToDiscord("MLG Fortress IZ BAK 4 MOAR MINECRAFT!!!111!! **IRC and Slack communication has been re-established!**");
             }
         }.runTaskLater(this, 100L);
     }
