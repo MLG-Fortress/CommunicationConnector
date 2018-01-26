@@ -61,15 +61,18 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         }.runTaskLater(this, 100L);
     }
 
-    private void sendToIRC(final String message)
+    private void sendToIRC(String message)
     {
+        message = message.replaceAll("\n", " \u00B6 ");
+        WordUtils.wrap(message, 509, "\u2026\n\u2026", false);
+        final String finalMessage = message;
         new BukkitRunnable()
         {
             @Override
             public void run()
             {
                 for (PurpleBot bot : purpleIRC.ircBots.values())
-                    bot.asyncIRCMessage("#MLG", message);
+                    bot.asyncIRCMessage("#MLG", finalMessage);
             }
         }.runTaskAsynchronously(this);
     }
