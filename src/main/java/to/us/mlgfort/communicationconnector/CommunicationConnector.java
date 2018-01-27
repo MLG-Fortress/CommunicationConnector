@@ -77,8 +77,9 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         }.runTaskAsynchronously(this);
     }
 
-    private void sendToDiscord(final String message)
+    private void sendToDiscord(String message)
     {
+        message = DiscordUtil.convertMentionsFromNames(message, DiscordSRV.getPlugin().getMainGuild());
         DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), message);
     }
 
