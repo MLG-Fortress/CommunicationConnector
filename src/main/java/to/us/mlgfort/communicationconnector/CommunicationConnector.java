@@ -8,6 +8,7 @@ import com.teej107.slack.Slack;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.util.DiscordUtil;
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -51,14 +52,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         {
             e.printStackTrace();
         }
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                sendToDiscord("MLG Fortress IZ BAK 4 MOAR MINECRAFT!!!111!! **IRC and Slack communication has been re-established!**");
-            }
-        }.runTaskLater(this, 100L);
+//        new BukkitRunnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                sendToDiscord("MLG Fortress IZ BAK 4 MOAR MINECRAFT!!!111!! **IRC and Slack communication has been re-established!**");
+//            }
+//        }.runTaskLater(this, 100L);
     }
 
     private void sendToIRC(String message)
@@ -219,6 +220,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         slack.sendToSlack("New player!", "*A wild `" + event.getPlayer().getName() + "` has appeared!*", false);
         sendToDiscord("**A wild `" + event.getPlayer().getName() + "` has appeared!**");
+        //sendToIRC(ChatColor.LIGHT_PURPLE + "A wild " + ChatColor.GREEN + event.getPlayer().getName() + ChatColor.LIGHT_PURPLE + " has appeared!");
     }
 
     private Set<Player> kickedPlayers = new HashSet<>();
@@ -232,9 +234,10 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
-            quitMessage = "`" + event.getPlayer().getName() + "` _left_";
+            quitMessage = "`" + getWhitespacedName(event.getPlayer().getName()) + "` _left_";
         slack.sendToSlack("Somebody left", quitMessage, false);
         sendToDiscord(quitMessage);
+        sendToIRC(ChatColor.DARK_GRAY + getWhitespacedName(event.getPlayer().getName()) + " left");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -255,6 +258,10 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         playerSentMessage.add(event.getPlayer());
     }
 
+    private String getWhitespacedName(String name)
+    {
+        return name.substring(0, 1) + "\u200B" + name.substring(1);
+    }
 }
 
 enum Apps
