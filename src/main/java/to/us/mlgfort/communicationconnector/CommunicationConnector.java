@@ -65,7 +65,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     private void sendToIRC(String message)
     {
         message = message.replaceAll("\n", " \u00B6 ");
-        WordUtils.wrap(message, 509, "\u2026\n\u2026", false);
+        if (message.length() > 440)
+            message = message.substring(0, 440);
         final String finalMessage = message;
         new BukkitRunnable()
         {
