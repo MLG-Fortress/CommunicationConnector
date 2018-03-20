@@ -164,7 +164,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         String nameWithZeroWidthWhitespace = nameWithZeroWidthWhitespaceBuilder.insert(1, "\u200B").toString();
         //String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
         //String prefix = appName + " ❙ " + name;
-        String prefixWithWhitespace = appName + " ❙ " + nameWithZeroWidthWhitespace;
+        String prefixWithWhitespace = ChatColor.GRAY + "[" + appName + "]" + nameWithZeroWidthWhitespace;
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
 
@@ -175,6 +175,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (sendingApp != Apps.DUMCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
             sendToDiscord("`" + prefixWithWhitespace + ":` " + message);
         this.getServer().getPluginManager().callEvent(new IncomingChatEvent(name, message));
+        getServer().broadcastMessage(ChatColor.GRAY + appName + "❙" + ChatColor.RESET + name + ": " + message);
     }
 
     private void mcToApps(Player player, String message)
