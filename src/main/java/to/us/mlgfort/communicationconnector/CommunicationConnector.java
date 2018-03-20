@@ -86,8 +86,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
                         if (message.toLowerCase().contains(user.getNick().toLowerCase()) && !message.toLowerCase().contains(user.getNick().toLowerCase() + ".com"))
                         {
                             getLogger().info("matched " + user.getNick());
-                            Pattern pattern = Pattern.compile("(?i)\b" + user.getNick() + "\b");
-                            Matcher matcher = pattern.matcher(message);
+                            Matcher matcher = Pattern.compile("(?i)\\b" + user.getNick() + "\\b").matcher(message);
                             for (int i = 1; matcher.find(); i++)
                             {
                                 messageBuilder.insert(matcher.start() + i, "\u200B");
