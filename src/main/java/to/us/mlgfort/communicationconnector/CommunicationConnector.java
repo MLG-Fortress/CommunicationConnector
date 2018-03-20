@@ -168,14 +168,16 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
 
+        if (sendingApp != Apps.IRC)
+        {
+            sendToIRC(prefixWithWhitespace + ": " + message, false);
+            getServer().broadcastMessage(ChatColor.GRAY + appName + "❙" + ChatColor.RESET + name + ": " + message);
+        }
         if (sendingApp != Apps.SLACK)
             slack.sendToSlack(prefixWithWhitespace, message, false);
-        if (sendingApp != Apps.IRC)
-            sendToIRC(prefixWithWhitespace + ": " + message, false);
         if (sendingApp != Apps.DUMCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
             sendToDiscord("`" + prefixWithWhitespace + ":` " + message);
         this.getServer().getPluginManager().callEvent(new IncomingChatEvent(name, message));
-        getServer().broadcastMessage(ChatColor.GRAY + appName + "❙" + ChatColor.RESET + name + ": " + message);
     }
 
     private void mcToApps(Player player, String message)
