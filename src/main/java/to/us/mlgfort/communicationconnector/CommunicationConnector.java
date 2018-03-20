@@ -85,11 +85,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
                     {
                         if (message.toLowerCase().contains(user.getNick().toLowerCase()) && !message.toLowerCase().contains(user.getNick().toLowerCase() + ".com"))
                         {
+                            getLogger().info("matched " + user.getNick());
                             Pattern pattern = Pattern.compile("(?i)\b" + user.getNick() + "\b");
                             Matcher matcher = pattern.matcher(message);
-                            while (matcher.find())
+                            for (int i = 1; matcher.find(); i++)
                             {
-                                messageBuilder.insert(matcher.start(), "\u200B");
+                                messageBuilder.insert(matcher.start() + i, "\u200B");
+                                getLogger().info("replaced position " + matcher.start() + " with offset " + i);
                             }
                             message = messageBuilder.toString();
                         }
@@ -148,6 +150,20 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         }.runTaskAsynchronously(this);
     }
 
+    private void sendToMC(String message)
+    {
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                //unknown if getOnlinePlayers is thread-safe
+                for (Player player : getServer().getOnlinePlayers())
+                    player.sendMessage(message);
+            }
+        }.runTask(this);
+    }
+
     public void sendToApps(Apps sendingApp, String name, String message)
     {
         String appName = sendingApp.toString();
@@ -164,7 +180,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         String nameWithZeroWidthWhitespace = nameWithZeroWidthWhitespaceBuilder.insert(1, "\u200B").toString();
         //String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
         //String prefix = appName + " ❙ " + name;
-        String prefixWithWhitespace = ChatColor.GRAY + "[" + appName + "] " + nameWithZeroWidthWhitespace;
+        String prefixWithWhitespace = ChatColor.GRAY + "[" + appName + "] " + ChatColor.RESET + nameWithZeroWidthWhitespace;
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
 
