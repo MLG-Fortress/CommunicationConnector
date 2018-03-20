@@ -22,7 +22,7 @@ public class DumCord
     @Subscribe
     public void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event)
     {
-        instance.sendToApps(Apps.DUMCORD, event.getMember().getEffectiveName(), event.getMessage().getContent());
+        instance.sendToApps(Apps.DUMCORD, event.getMember().getEffectiveName(), event.getMessage().getContentDisplay());
         for (Message.Attachment attachment : event.getMessage().getAttachments())
             instance.sendToApps(Apps.DUMCORD, event.getMember().getEffectiveName(), attachment.getUrl());
     }

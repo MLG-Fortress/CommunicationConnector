@@ -3,6 +3,7 @@ package to.us.mlgfort.communicationconnector;
 import com.cnaude.purpleirc.Events.IRCMessageEvent;
 import com.cnaude.purpleirc.PurpleBot;
 import com.cnaude.purpleirc.PurpleIRC;
+import com.cnaude.purpleirc.ext.org.pircbotx.User;
 import com.teej107.slack.MessageSentFromSlackEvent;
 import com.teej107.slack.Slack;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -23,10 +24,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created on 7/29/2017.
@@ -35,10 +39,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CommunicationConnector extends JavaPlugin implements Listener
 {
-    Slack slack;
-    PurpleIRC purpleIRC;
+    private Slack slack;
+    private PurpleIRC purpleIRC;
+    private final Pattern removeLineBreaks = Pattern.compile("\n");
+    private JavaPlugin hello;
     public void onEnable()
     {
+        this.hello = this;
         PluginManager pm = getServer().getPluginManager();
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
@@ -62,32 +69,89 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 //        }.runTaskLater(this, 100L);
     }
 
-    private void sendToIRC(String message)
+    private void sendToIRC(String msg, boolean dontPing)
     {
-        message = message.replaceAll("\n", " \u00B6 ");
-        if (message.length() > 440)
-            message = message.substring(0, 440);
-        final String finalMessage = message;
         new BukkitRunnable()
         {
+            String message = msg;
             @Override
             public void run()
             {
-                for (PurpleBot bot : purpleIRC.ircBots.values())
-                    bot.asyncIRCMessage("#MLG", finalMessage);
+                if (dontPing)
+                {
+                    PurpleBot bot = purpleIRC.ircBots.values().iterator().next(); //One bot's more than enuf work thx
+                    StringBuilder messageBuilder = new StringBuilder(message);
+                    for (User user : bot.getBot().getUserBot().getChannels().first().getUsers())
+                    {
+                        if (message.toLowerCase().contains(user.getNick().toLowerCase()) && !message.toLowerCase().contains(user.getNick().toLowerCase() + ".com"))
+                        {
+                            Pattern pattern = Pattern.compile("(?i)\b" + user.getNick() + "\b");
+                            Matcher matcher = pattern.matcher(message);
+                            while (matcher.find())
+                            {
+                                messageBuilder.insert(matcher.start(), "\u200B");
+                            }
+                            message = messageBuilder.toString();
+                        }
+                    }
+                }
+                message = removeLineBreaks.matcher(message).replaceAll(" \u00B6 ");
+                if (message.length() > 440)
+                    message = message.substring(0, 440);
+                final String finalMessage = message;
+                new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        for (PurpleBot bot : purpleIRC.ircBots.values())
+                            bot.asyncIRCMessage("#MLG", finalMessage);
+                    }
+                }.runTaskAsynchronously(hello);
             }
         }.runTaskAsynchronously(this);
     }
 
     private void sendToDiscord(String message)
     {
-        message = DiscordUtil.convertMentionsFromNames(message, DiscordSRV.getPlugin().getMainGuild());
-        DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), message);
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), DiscordUtil.convertMentionsFromNames(message, DiscordSRV.getPlugin().getMainGuild()));
+            }
+        }.runTaskAsynchronously(this);
+    }
+
+    private void sendToSlack(CommandSender sender, String message)
+    {
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                slack.sendToSlack(sender, message);
+            }
+        }.runTaskAsynchronously(this);
+    }
+
+    private void sendToSlack(String name, String message)
+    {
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                slack.sendToSlack(name, message, false);
+            }
+        }.runTaskAsynchronously(this);
     }
 
     public void sendToApps(Apps sendingApp, String name, String message)
     {
         String appName = sendingApp.toString();
+
         switch(sendingApp)
         {
             case IRC:
@@ -96,34 +160,53 @@ public class CommunicationConnector extends JavaPlugin implements Listener
                 appName = WordUtils.capitalize(sendingApp.toString().toLowerCase());
         }
 
-        String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
-        String prefix = "[" + appName + "] " + name;
-        String prefixWithWhitespace = "[" + appName + "] " + nameWithZeroWidthWhitespace;
+        StringBuilder nameWithZeroWidthWhitespaceBuilder = new StringBuilder(name);
+        String nameWithZeroWidthWhitespace = nameWithZeroWidthWhitespaceBuilder.insert(1, "\u200B").toString();
+        //String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
+        //String prefix = appName + " ❙ " + name;
+        String prefixWithWhitespace = appName + " ❙ " + nameWithZeroWidthWhitespace;
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
 
         if (sendingApp != Apps.SLACK)
-            slack.sendToSlack(prefix, message, false);
+            slack.sendToSlack(prefixWithWhitespace, message, false);
         if (sendingApp != Apps.IRC)
-            sendToIRC(prefixWithWhitespace + ": " + message);
+            sendToIRC(prefixWithWhitespace + ": " + message, false);
         if (sendingApp != Apps.DUMCORD) //Must ensure DiscordSRV integration is disabled in PurpleIRC
-            sendToDiscord("`" + prefix + ":` " + message);
+            sendToDiscord("`" + prefixWithWhitespace + ":` " + message);
         this.getServer().getPluginManager().callEvent(new IncomingChatEvent(name, message));
+    }
+
+    private void mcToApps(Player player, String message)
+    {
+        sendToIRC(player.getDisplayName() + ": " + message, true);
+        sendToSlack(player, message);
+
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                StringBuilder nameWithZeroWidthWhitespaceBuilder = new StringBuilder(player.getDisplayName());
+                String nameWithZeroWidthWhitespace = nameWithZeroWidthWhitespaceBuilder.insert(player.getDisplayName().length() - 3, "\u200B").toString();
+                sendToDiscord("`" + nameWithZeroWidthWhitespace + ":` " + message);
+            }
+        }.runTaskAsynchronously(this);
     }
 
     public void sendToAllApps(String message)
     {
-        slack.sendToSlack("Serbur", message, false);
-        sendToIRC(message);
+        sendToSlack("Serbur", message);
+        sendToIRC(message, true);
         sendToDiscord(message);
     }
 
-    public void sendToAllApps(String name, String message)
-    {
-        slack.sendToSlack(name, message, false);
-        sendToIRC(name + ": " + message);
-        sendToDiscord(name + ": " + message);
-    }
+//    public void sendToAllApps(String name, String message)
+//    {
+//        slack.sendToSlack(name, message, false);
+//        sendToIRC(name + ": " + message, true);
+//        sendToDiscord(name + ": " + message);
+//    }
 
     //MC Listeners//
     //I might be better off not attempting to implement this since literally every plugin implements this anyways...
@@ -219,9 +302,9 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (event.getPlayer().hasPlayedBefore())
             return;
 
+        sendToIRC(ChatColor.LIGHT_PURPLE + "A wild " + ChatColor.GREEN + event.getPlayer().getName() + ChatColor.LIGHT_PURPLE + " has appeared!", false);
         slack.sendToSlack("New player!", "*A wild `" + event.getPlayer().getName() + "` has appeared!*", false);
         sendToDiscord("**A wild `" + event.getPlayer().getName() + "` has appeared!**");
-        //sendToIRC(ChatColor.LIGHT_PURPLE + "A wild " + ChatColor.GREEN + event.getPlayer().getName() + ChatColor.LIGHT_PURPLE + " has appeared!");
     }
 
     private Set<Player> kickedPlayers = new HashSet<>();
@@ -235,10 +318,10 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
-            quitMessage = "`" + getWhitespacedName(event.getPlayer().getName()) + "` _left_";
+            quitMessage = "`" + getWhitespacedName(event.getPlayer().getName()) + " dc'd`";
+        sendToIRC(ChatColor.DARK_GRAY + getWhitespacedName(event.getPlayer().getName()) + " dc'd", false);
         slack.sendToSlack("Somebody left", quitMessage, false);
         sendToDiscord(quitMessage);
-        sendToIRC(ChatColor.DARK_GRAY + getWhitespacedName(event.getPlayer().getName()) + " left");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -246,22 +329,24 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     {
         if (!playerSentMessage.remove(event.getPlayer()))
             return;
-        String quitMessage = "`" + event.getPlayer().getName() + "` _left bcuz " + event.getReason() + "_";
-        slack.sendToSlack("Somebody wuz kik'd", quitMessage, false);
+        sendToIRC(ChatColor.DARK_GRAY + event.getPlayer().getName() + " wuz kik'd cuz " + event.getReason(), true);
+        String quitMessage = "`" + event.getPlayer().getName() + " wuz kik'd cuz " + event.getReason() + "`";
+        sendToSlack("Somebody wuz kik'd", quitMessage);
         sendToDiscord(quitMessage);
         kickedPlayers.add(event.getPlayer());
-        playerSentMessage.remove(event.getPlayer()); //cleanup
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onChat(AsyncPlayerChatEvent event)
     {
         playerSentMessage.add(event.getPlayer());
+        mcToApps(event.getPlayer(), event.getMessage());
     }
 
     private String getWhitespacedName(String name)
     {
-        return name.substring(0, 1) + "\u200B" + name.substring(1);
+        StringBuilder nameWithZeroWidthWhitespaceBuilder = new StringBuilder(name);
+        return nameWithZeroWidthWhitespaceBuilder.insert(1, "\u200B").toString();
     }
 }
 
