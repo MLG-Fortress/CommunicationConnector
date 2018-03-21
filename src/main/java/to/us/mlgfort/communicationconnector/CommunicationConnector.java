@@ -317,6 +317,13 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event)
     {
+        if (recentlyLeft.remove(event.getPlayer()))
+        {
+            sendToIRC(ChatColor.GREEN + getWhitespacedName(event.getPlayer().getName()) + " rejoined.", false);
+            sendToSlack("They're bak!", getWhitespacedName(event.getPlayer().getName()) + " rejoined");
+            sendToDiscord("`" + getWhitespacedName(event.getPlayer().getName()) + " rejoined`");
+        }
+
         if (event.getPlayer().hasPlayedBefore())
             return;
 
@@ -327,12 +334,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private Set<Player> kickedPlayers = new HashSet<>();
     private Set<Player> playerSentMessage = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+    private Set<Player> recentlyLeft = new HashSet<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onQuit(PlayerQuitEvent event)
     {
         if (kickedPlayers.remove(event.getPlayer()) || !playerSentMessage.remove(event.getPlayer()))
             return;
+        recentlyLeft.add(event.getPlayer());
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
