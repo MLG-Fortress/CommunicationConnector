@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -317,7 +318,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event)
     {
-        if (recentlyLeft.remove(event.getPlayer()))
+        if (recentlyLeft.remove(event.getPlayer().getUniqueId()))
         {
             sendToIRC(ChatColor.GREEN + getWhitespacedName(event.getPlayer().getName()) + " rejoined.", false);
             sendToSlack("They're bak!", getWhitespacedName(event.getPlayer().getName()) + " rejoined");
@@ -334,14 +335,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private Set<Player> kickedPlayers = new HashSet<>();
     private Set<Player> playerSentMessage = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
-    private Set<Player> recentlyLeft = new HashSet<>();
+    private Set<UUID> recentlyLeft = new HashSet<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     private void onQuit(PlayerQuitEvent event)
     {
         if (kickedPlayers.remove(event.getPlayer()) || !playerSentMessage.remove(event.getPlayer()))
             return;
-        recentlyLeft.add(event.getPlayer());
+        recentlyLeft.add(event.getPlayer().getUniqueId());
 
         String quitMessage = event.getQuitMessage();
         if (quitMessage == null || quitMessage.isEmpty())
