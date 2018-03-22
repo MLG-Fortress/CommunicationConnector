@@ -178,7 +178,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         StringBuilder nameWithZeroWidthWhitespaceBuilder = new StringBuilder(name);
         String nameWithZeroWidthWhitespace = nameWithZeroWidthWhitespaceBuilder.insert(1, "\u200B").toString();
         //String nameWithZeroWidthWhitespace = name.substring(0, 1) + "\u200B" + name.substring(1);
-        String prefix = "[" + appName + "]" + name;
+        String prefix = "[" + appName + "] " + name;
         String prefixWithWhitespace = ChatColor.GRAY + "[" + appName + "] " + ChatColor.RESET + nameWithZeroWidthWhitespace;
         //String formattedMessage = ChatColor.GRAY + appName + "\u2759" + name + ": " + ChatColor.WHITE + message;
         //getServer().broadcastMessage(formattedMessage);
