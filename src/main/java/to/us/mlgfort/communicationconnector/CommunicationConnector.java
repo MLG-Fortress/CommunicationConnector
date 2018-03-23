@@ -187,7 +187,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (sendingApp != Apps.IRC)
         {
             sendToIRC(prefixWithWhitespace + ": " + message, false);
-            getServer().broadcastMessage(ChatColor.GRAY + appName + "❙" + ChatColor.RESET + name + ": " + message);
+            sendToMC(ChatColor.GRAY + appName + "❙" + ChatColor.RESET + name + ": " + message);
         }
         if (sendingApp != Apps.SLACK)
             sendToSlack(prefix, message);
