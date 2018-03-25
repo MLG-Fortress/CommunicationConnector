@@ -321,7 +321,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (recentlyLeft.remove(event.getPlayer().getUniqueId()))
         {
             sendToIRC(ChatColor.GREEN + getWhitespacedName(event.getPlayer().getName()) + " rejoined.", false);
-            sendToSlack("They're bak!", getWhitespacedName(event.getPlayer().getName()) + " rejoined");
+            sendToSlack("They're bak!", "`" + getWhitespacedName(event.getPlayer().getName()) + " rejoined`");
             sendToDiscord("`" + getWhitespacedName(event.getPlayer().getName()) + " rejoined`");
         }
 
