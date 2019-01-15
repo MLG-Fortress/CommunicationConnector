@@ -6,8 +6,6 @@ import com.cnaude.purpleirc.PurpleIRC;
 import com.cnaude.purpleirc.ext.org.pircbotx.User;
 import com.teej107.slack.MessageSentFromSlackEvent;
 import com.teej107.slack.Slack;
-import github.scarsz.discordsrv.DiscordSRV;
-import github.scarsz.discordsrv.util.DiscordUtil;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,9 +22,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,15 +49,15 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
         slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
-        DumCord why = new DumCord(this);
-        try
-        {
-            DiscordSRV.api.subscribe(why);
-        }
-        catch (Throwable e)
-        {
-            e.printStackTrace();
-        }
+//        DumCord why = new DumCord(this);
+//        try
+//        {
+//            DiscordSRV.api.subscribe(why);
+//        }
+//        catch (Throwable e)
+//        {
+//            e.printStackTrace();
+//        }
 //        new BukkitRunnable()
 //        {
 //            @Override
@@ -78,25 +76,38 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             @Override
             public void run()
             {
-                if (dontPing)
+                Iterator<PurpleBot> bots = purpleIRC.ircBots.values().iterator();
+                while (bots.hasNext())
                 {
-                    PurpleBot bot = purpleIRC.ircBots.values().iterator().next(); //One bot's more than enuf work thx
-                    StringBuilder messageBuilder = new StringBuilder(message);
-                    for (User user : bot.getBot().getUserBot().getChannels().first().getUsers())
+                    if (dontPing)
                     {
-                        if (message.toLowerCase().contains(user.getNick().toLowerCase()) && !message.toLowerCase().contains(user.getNick().toLowerCase() + ".com"))
+                        PurpleBot bot = bots.next();
+                        try
                         {
-                            getLogger().info("matched " + user.getNick());
-                            Matcher matcher = Pattern.compile("(?i)\\b" + user.getNick() + "\\b").matcher(message);
-                            for (int i = 1; matcher.find(); i++)
+                            StringBuilder messageBuilder = new StringBuilder(message);
+                            for (User user : bot.getBot().getUserBot().getChannels().first().getUsers())
                             {
-                                messageBuilder.insert(matcher.start() + i, "\u200B");
-                                getLogger().info("replaced position " + matcher.start() + " with offset " + i);
+                                if (message.toLowerCase().contains(user.getNick().toLowerCase()) && !message.toLowerCase().contains(user.getNick().toLowerCase() + ".com"))
+                                {
+                                    getLogger().info("matched " + user.getNick());
+                                    Matcher matcher = Pattern.compile("(?i)\\b" + user.getNick() + "\\b").matcher(message);
+                                    for (int i = 1; matcher.find(); i++)
+                                    {
+                                        messageBuilder.insert(matcher.start() + i, "\u200B");
+                                        getLogger().info("replaced position " + matcher.start() + " with offset " + i);
+                                    }
+                                    message = messageBuilder.toString();
+                                }
                             }
-                            message = messageBuilder.toString();
+                        }
+                        catch (Throwable rock)
+                        {
+                            continue;
                         }
                     }
+                    break;
                 }
+
                 message = removeLineBreaks.matcher(message).replaceAll(" \u00B6 ");
                 if (message.length() > 440)
                     message = message.substring(0, 440);
@@ -116,14 +127,14 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private void sendToDiscord(String message)
     {
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), DiscordUtil.convertMentionsFromNames(message, DiscordSRV.getPlugin().getMainGuild()));
-            }
-        }.runTaskAsynchronously(this);
+//        new BukkitRunnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                DiscordUtil.sendMessage(DiscordUtil.getTextChannelById("341448913200349203"), DiscordUtil.convertMentionsFromNames(message, DiscordSRV.getPlugin().getMainGuild()));
+//            }
+//        }.runTaskAsynchronously(this);
     }
 
     private void sendToSlack(CommandSender sender, String message)

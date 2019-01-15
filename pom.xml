@@ -20,14 +20,6 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
-        <repository>
-            <id>Scarsz-Jenkins</id>
-            <url>http://ci.scarsz.me/plugin/repository/everything/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
     </repositories>
     <build>
         <finalName>${project.name}</finalName>
@@ -45,7 +37,7 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -59,12 +51,6 @@
             <groupId>com.github.MLG-Fortress</groupId>
             <artifactId>SlackIntegration</artifactId>
             <version>2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>github.scarsz.discordsrv</groupId>
-            <artifactId>DiscordSRV</artifactId>
-            <version>1.16.1</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
