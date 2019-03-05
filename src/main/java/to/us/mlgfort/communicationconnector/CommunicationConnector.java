@@ -139,6 +139,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private void sendToSlack(CommandSender sender, String message)
     {
+        if (slack == null)
+            return;
         new BukkitRunnable()
         {
             @Override
@@ -151,6 +153,8 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private void sendToSlack(String name, String message)
     {
+        if (slack == null)
+            return;
         new BukkitRunnable()
         {
             @Override
