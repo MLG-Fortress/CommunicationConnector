@@ -289,11 +289,11 @@ public class CommunicationConnector extends JavaPlugin implements Listener
     //App Listeners//
 
     //Slack
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void onSlackMessageSent(MessageSentFromSlackEvent event)
-    {
-        sendToApps(Apps.SLACK, event.getUsername(), event.getMessage());
-    }
+//    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//    private void onSlackMessageSent(MessageSentFromSlackEvent event)
+//    {
+//        sendToApps(Apps.SLACK, event.getUsername(), event.getMessage());
+//    }
 
     //IRC
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -344,7 +344,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
             return;
 
         sendToIRC(ChatColor.LIGHT_PURPLE + "A wild " + ChatColor.GREEN + event.getPlayer().getName() + ChatColor.LIGHT_PURPLE + " has appeared!", false);
-        slack.sendToSlack("New player!", "*A wild `" + event.getPlayer().getName() + "` has appeared!*", false);
+        sendToSlack("New player!", "*A wild `" + event.getPlayer().getName() + "` has appeared!*");
         sendToDiscord("**A wild `" + event.getPlayer().getName() + "` has appeared!**");
     }
 
@@ -363,7 +363,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         if (quitMessage == null || quitMessage.isEmpty())
             quitMessage = "`" + getWhitespacedName(event.getPlayer().getName()) + " dc'd`";
         sendToIRC(ChatColor.DARK_GRAY + getWhitespacedName(event.getPlayer().getName()) + " dc'd", false);
-        slack.sendToSlack("Somebody left", quitMessage, false);
+        sendToSlack("Somebody left", quitMessage);
         sendToDiscord(quitMessage);
     }
 
