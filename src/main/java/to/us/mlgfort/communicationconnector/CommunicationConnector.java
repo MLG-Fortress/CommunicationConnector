@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  */
 public class CommunicationConnector extends JavaPlugin implements Listener
 {
-    private Slack slack;
+//    private Slack slack;
     private PurpleIRC purpleIRC;
     private final Pattern removeLineBreaks = Pattern.compile("\n");
     private JavaPlugin hello;
@@ -47,7 +47,7 @@ public class CommunicationConnector extends JavaPlugin implements Listener
         this.hello = this;
         PluginManager pm = getServer().getPluginManager();
         getServer().getPluginManager().registerEvents(this, this);
-        slack = (Slack)pm.getPlugin("SlackIntegration");
+//        slack = (Slack)pm.getPlugin("SlackIntegration");
         purpleIRC = (PurpleIRC)pm.getPlugin("PurpleIRC");
 //        DumCord why = new DumCord(this);
 //        try
@@ -139,30 +139,30 @@ public class CommunicationConnector extends JavaPlugin implements Listener
 
     private void sendToSlack(CommandSender sender, String message)
     {
-        if (slack == null)
-            return;
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                slack.sendToSlack(sender, message);
-            }
-        }.runTaskAsynchronously(this);
+//        if (slack == null)
+//            return;
+//        new BukkitRunnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                slack.sendToSlack(sender, message);
+//            }
+//        }.runTaskAsynchronously(this);
     }
 
     private void sendToSlack(String name, String message)
     {
-        if (slack == null)
-            return;
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                slack.sendToSlack(name, message, false);
-            }
-        }.runTaskAsynchronously(this);
+//        if (slack == null)
+//            return;
+//        new BukkitRunnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                slack.sendToSlack(name, message, false);
+//            }
+//        }.runTaskAsynchronously(this);
     }
 
     private void sendToMC(String message)
